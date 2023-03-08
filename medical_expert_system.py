@@ -6,7 +6,11 @@ diseases_symptoms = []
 symptom_map = {}
 d_desc_map = {}
 d_treatment_map = {}
+this_is_for_you = 0
 
+def set_this(num):
+	global this_is_for_you
+	this_is_for_you = num
 	# Create the Streamlit app
 def app():
 		
@@ -35,6 +39,8 @@ def app():
 
 		# Use the knowledge engine to diagnose the disease
 		if submitted:
+			set_this(1)
+			
 			engine.reset()
 			engine.declare(Fact(headache=headache))
 			engine.declare(Fact(back_pain=back_pain))
@@ -91,18 +97,19 @@ def get_treatments(disease):
 	return d_treatment_map[disease]
 
 def if_not_matched(disease):
-		if disease not in diseases_list:
-			disease = diseases_list[0]
-		print(disease)
-		id_disease = disease
-		disease_details = get_details(id_disease)
-		treatments = get_treatments(id_disease)
-		st.write("Your symptoms don't exist in our expert systems")
-		st.write(f" However, the most probable disease that you have is {id_disease}")
-		st.write("A short description of the disease is given below :")
-		st.write(disease_details)
-		st.write("The common medications and procedures suggested by other real doctors are: ")
-		st.write(treatments)
+		if this_is_for_you == 1:
+			if disease not in diseases_list:
+				disease = diseases_list[0]
+			id_disease = disease
+			disease_details = get_details(id_disease)
+			treatments = get_treatments(id_disease)
+			st.write("Your symptoms don't exist in our expert systems")
+			st.write(f" However, the most probable disease that you have is {id_disease}")
+			st.write("A short description of the disease is given below :")
+			st.write(disease_details)
+			st.write("The common medications and procedures suggested by other real doctors are: ")
+			st.write(treatments)
+			set_this(0)
 
 # @my_decorator is just a way of saying just_some_function = my_decorator(just_some_function)
 #def identify_disease(headache, back_pain, chest_pain, cough, fainting, sore_throat, fatigue, restlessness,low_body_temp ,fever,sunken_eyes):
@@ -253,17 +260,18 @@ class Greetings(KnowledgeEngine):
 		lis = [headache, back_pain, chest_pain, cough, fainting, sore_throat, fatigue, restlessness,low_body_temp ,fever ,sunken_eyes ,nausea ,blurred_vision]
 		max_count = 0
 		max_disease = ""
-		for key,val in symptom_map.items():
-			count = 0
-			temp_list = eval(key)
-			for j in range(0,len(lis)):
-				if(temp_list[j] == lis[j] and lis[j] == "yes"):
-					count = count + 1
-			if count > max_count:
-				max_count = count
-				max_disease = val
+		# for key,val in symptom_map.items():
+		# 	count = 0
+		# 	temp_list = eval(key)
+		# 	for j in range(0,len(lis)):
+		# 		if(temp_list[j] == lis[j] and lis[j] == "yes"):
+		# 			count = count + 1
+		# 	if count > max_count:
+		# 		max_count = count
+		# 		max_disease = val
 		
 		print("here")
+		print(max_disease)
 		if_not_matched(max_disease)
 
 
